@@ -9,7 +9,7 @@ Learn how to:
 # import necessary packages
 
 import argparse
-import cv2
+import cv2 
  
 # construct argument parsing
 argparser = argparse.ArgumentParser()
