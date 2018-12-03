@@ -10,6 +10,8 @@ Learn how to:
 
 import argparse
 import cv2 
+import numpy as np
+
  
 # construct argument parsing
 argparser = argparse.ArgumentParser()
@@ -54,10 +56,10 @@ cv2.namedWindow("Viewport2", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("Viewport2", width , height) 
 
 # view image
-cv2.imshow("Viewport", image)
+cv2.imshow("Viewport", imageOriginal)
 cv2.imshow("Viewport1", thresh)
 cv2.imshow("Viewport2", imageFinal)
-cv2.imwrite("new.jpg",imageFinal)
+#cv2.imwrite("new.jpg",imageFinal)
 # Improvise waitKey to only close upon pressing esc
 k = cv2.waitKey(0)
 while k != 27:

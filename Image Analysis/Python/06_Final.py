@@ -26,7 +26,7 @@ def maskImages(inputIM, outputIM):
     contours= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[1] # only need outer contours so we use RETR_EXTERNAL
     # Display contour
     imageFinal = image.copy()
-
+    
     cv2.drawContours(image, contours, -1, (0,255,255), 3)
 
     # Filter Contours Area
