@@ -10,6 +10,9 @@ for i = 1:3
     imshow(imds.Files{perm(i)});
 end
 
+% Preprocess images to the same size 
+
+
 labelCount = countEachLabel(imds)
 
 img = readimage(imds,1);
