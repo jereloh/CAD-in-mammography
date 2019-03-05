@@ -13,12 +13,11 @@ Simple py script to sort and convert dicom to png from the CBIS_DDSM
 7. Check that based on .csv, all data have been converted (no. of conversions)
 
 [Limitations]
-1. Script hardcodes filepath ./<name of folder>/CBIS-DDSM/...
-2. Script's recursive file search uses glob expects only a single file .dcm to be found
-3. Script is written for unix/linux systems only
-4. Script expects .csv to have these headers patient_id,left or right breast,image view,pathology to determine filename
-5. Script treats pathology data BENIGN_WITHOUT_CALLBACK as the same as BENIGN 
-6. Script only catered for pathology values BENIGN, MALIGNANT, all other values are grouped as OTHERS
+1. Script's recursive file search uses glob expects only a single file .dcm to be found
+2. Script is written for unix/linux systems only
+3. Script expects .csv to have these headers patient_id,left or right breast,image view,pathology to determine filename
+4. Script treats pathology data BENIGN_WITHOUT_CALLBACK as the same as BENIGN 
+5. Script only catered for pathology values BENIGN, MALIGNANT, all other values are grouped as OTHERS
 '''
 # Call the necessary imports
 import os, argparse, glob
@@ -117,9 +116,11 @@ for index, row in corr_df.iterrows():
     else:
         output_Dicom2PNG = (args["input"]+"OTHERS")
 
+    # Progress bar
+    print ("[",i,"/",len(corr_df),"]", end='')
+
     # Convert dicom2png
-    print(input_Dicom2PNG)
-    #dicom2png(input_Dicom2PNG,output_Dicom2PNG,str_parse)
+    dicom2png(input_Dicom2PNG,output_Dicom2PNG,str_parse)
     i += 1
 
 if i == len(corr_df):
