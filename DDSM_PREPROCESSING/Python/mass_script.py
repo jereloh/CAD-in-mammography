@@ -75,9 +75,9 @@ def chkFolder(flder_path):
         os.makedirs(flder_path)
 
 # [Function] Subfolder finder using glob
-def dcmFullPath(flder_path):
+def dcmFullPath(str_parse):
     # Find all subfolders using glob module, iterate through and do sth based on file path name
-    files = glob.glob(flder_path + '/*/*/*.dcm', recursive=True)
+    files = glob.glob( args["input"]+"*/*"+str_parse+"/" + '/*/*/*.dcm', recursive=True)
     if (len(files) == 1):
         return files[0]
     else:
@@ -106,11 +106,8 @@ for index, row in corr_df.iterrows():
     # Place the parse string together to search the file path for it.
     str_parse = row["patient_id"]+"_"+row["left or right breast"]+"_"+row["image view"] 
 
-    # Generate File interested file path from .csv
-    str_file_path = args["input"]+"CBIS-DDSM/Mass-Training_"+str_parse+"/"
-
     # Generate file path of .dcm
-    input_Dicom2PNG = dcmFullPath(str_file_path)
+    input_Dicom2PNG = dcmFullPath(str_parse)
 
     # Sort input into relevant folders
     if "BENIGN" in row["pathology"] :  
@@ -121,7 +118,8 @@ for index, row in corr_df.iterrows():
         output_Dicom2PNG = (args["input"]+"OTHERS")
 
     # Convert dicom2png
-    dicom2png(input_Dicom2PNG,output_Dicom2PNG,str_parse)
+    print(input_Dicom2PNG)
+    #dicom2png(input_Dicom2PNG,output_Dicom2PNG,str_parse)
     i += 1
 
 if i == len(corr_df):
