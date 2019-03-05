@@ -33,10 +33,9 @@ argparser.add_argument( "-csv", required=True,
 	help="Please insert csv filename. E.g. -csv mass_case_description_train_set.csv")
 args = vars(argparser.parse_args())
 
-#Referenced from https://github.com/pydicom/pydicom/issues/352
+# Referenced from https://github.com/pydicom/pydicom/issues/352
 def dicom2png(src, out_folder, file_name): 
     try:
-        #ds = pydicom.dcmread(os.path.join(src_folder,file))
         ds = pydicom.dcmread(src)
         shape = ds.pixel_array.shape
 
