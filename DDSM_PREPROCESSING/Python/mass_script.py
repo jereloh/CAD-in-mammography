@@ -1,25 +1,40 @@
 '''
-Mass_DDSM script dicom converter and sorter in python
-[Goal]
-1. Read .csv file provided, to be placed within the input folder
-2. Read folder name which correlates to patient
-3. Toss patient case into folders benign, malignant, normal
-'''
+[Description]
+Simple py script to sort and convert dicom to png from the CBIS_DDSM
 
+[Goal] 
+<~~> are arbitary values used for explanation of this script.
+1. Read .csv file provided, to be placed within the input folder ./<name of folder>/
+2. Read folder name which correlates to patient from .csv
+3. Creates folders benign, malignant, normal within input folder ./<name of folder/BENIGN/,./<name of folder/MALIGNANT/ etc.
+4. Obtains .dcm from ./<name of folder>/CBIS-DDSM/Mass-Training_<P_00001_LEFT_CC>/*/*/*.dcm file path
+5. Converts .dcm into .png using <P_00001_LEFT_CC>.png as filename
+6. Continues until all files within ./<name of folder>/CBIS-DDSM/ is completed
+7. Check that based on .csv, all data have been converted (no. of conversions)
+
+[Limitations]
+1. Script hardcodes filepath ./<name of folder>/CBIS-DDSM/...
+2. Script's recursive file search uses glob expects only a single file .dcm to be found
+3. Script is written for unix/linux systems only
+4. Script expects .csv to have these headers patient_id,left or right breast,image view,pathology to determine filename
+5. Script treats pathology data BENIGN_WITHOUT_CALLBACK as the same as BENIGN 
+6. Script only catered for pathology values BENIGN, MALIGNANT, all other values are grouped as OTHERS
+'''
 # Call the necessary imports
-import os, argparse
+import os, argparse, glob
 import pydicom, png
-import numpy
-import pandas
-import glob
+import numpy, pandas
 
 # construct argument parsing
 argparser = argparse.ArgumentParser()
 argparser.add_argument( "-i", "--input", required=True,
-	help="please insert input and output folder path of the image and insert the appropriate csv file name")
+	help="Please insert input folder path.")
+argparser.add_argument( "-csv", required=True,
+	help="Please insert csv filename. E.g. -csv mass_case_description_train_set.csv")
 args = vars(argparser.parse_args())
 
-def dicom2png(src, out_folder, file_name): #Ref https://github.com/pydicom/pydicom/issues/352
+#Referenced from https://github.com/pydicom/pydicom/issues/352
+def dicom2png(src, out_folder, file_name): 
     try:
         #ds = pydicom.dcmread(os.path.join(src_folder,file))
         ds = pydicom.dcmread(src)
@@ -28,72 +43,73 @@ def dicom2png(src, out_folder, file_name): #Ref https://github.com/pydicom/pydic
         # Convert to float to avoid overflow or underflow losses.
         image_2d = ds.pixel_array.astype(float)
 
-        # Rescaling grey scale between 0-255
+        # Rescaling grey scale between 0-255 (image in grey scale anyhows)
         image_2d_scaled = (numpy.maximum(image_2d,0) / image_2d.max()) * 255.0
 
         # Convert to uint
         image_2d_scaled = numpy.uint8(image_2d_scaled)
 
-        # Write the PNG file
+        # Writes .PNG file
         with open(os.path.join(out_folder,file_name)+'.png' , 'wb') as png_file:
             w = png.Writer(shape[1], shape[0], greyscale=True)
             w.write(png_file, image_2d_scaled)
         print(file_name+".png","converted")
     except:
-        print('Could not convert: ',src)
+        print('[ERROR] Could not convert:',src)
+        quit()
 
-'''
-[Function] readCSV
-[Goal]: Read file into an dataframe to correlate the folder names to the correct status of the images
-'''
+# [Function] readCSV
 def readCSV(data_path):
-    #read csv
-    corr_df =  pandas.read_csv(data_path)
-    # create new dataframe that populates patient id and 
-    # We understand that the folder is named as such .../CBIS_DDSM/Mass-Training_P_00001_LEFT_MLO/...(file contents)
-    # scrub dataframe
-    return corr_df[['patient_id','left or right breast','image view','pathology']]
-'''
-[Function] Create folders
-'''
+    try:
+        corr_df =  pandas.read_csv(data_path)
+        # Select only required ids and put into dataframe
+        print ("Reading:",data_path)
+        return corr_df[['patient_id','left or right breast','image view','pathology']]
+    except:
+        print ('[ERROR] Could not read csv:',data_path)
+        quit()
+
+# [Function] Create necessary folder function
 def chkFolder(flder_path):
     if not os.path.exists(flder_path):
         print ("Folder don't exist. Making..")
         os.makedirs(flder_path)
-'''
-[Function] Subfolder finder 
-'''
+
+# [Function] Subfolder finder using glob
 def dcmFullPath(flder_path):
     # Find all subfolders using glob module, iterate through and do sth based on file path name
     files = glob.glob(flder_path + '/*/*/*.dcm', recursive=True)
     if (len(files) == 1):
         return files[0]
     else:
-        print ("More than 1 file found", files)
+        print ("[ERROR] More than 1 file found", files)
         quit()
-'''
-"Main"
-'''
-# readCSV, put into dataframe
-corr_df_datapath = args["input"]+ "mass_case_description_train_set.csv"
-print (corr_df_datapath)
+
+# --- "MAIN" ---
+
+# Read .CSV, put into dataframe
+corr_df_datapath = args["input"]+ args["csv"]
 corr_df = readCSV(corr_df_datapath)
-print (corr_df)
-# Idea: due to space constrain we won't be modifying the raw data files 
-# Before trying anything here, we need to find out the file to be converted belongs to which patient and its pathology
 
 # Check folders Malignant and Benign created
 chkFolder(args["input"]+"BENIGN")
 chkFolder(args["input"]+"MALIGNANT")
-chkFolder(args["input"]+"OTHERS")
+chkFolder(args["input"]+"OTHERS") # In Case there are other values apart from BENIGN and MALIGNANT
 
-# Iterate through corr_df 
+print("Converting...")
+
+# Counter i, for checking number of conversions
+i = 0
+
+# Iterate through dataframe 
 for index, row in corr_df.iterrows():
 
-    # Place the parse string together? search the file path for it.
-    # Generate File interested file path from .csv
+    # Place the parse string together to search the file path for it.
     str_parse = row["patient_id"]+"_"+row["left or right breast"]+"_"+row["image view"] 
+
+    # Generate File interested file path from .csv
     str_file_path = args["input"]+"CBIS-DDSM/Mass-Training_"+str_parse+"/"
+
     # Generate file path of .dcm
     input_Dicom2PNG = dcmFullPath(str_file_path)
 
@@ -107,4 +123,10 @@ for index, row in corr_df.iterrows():
 
     # Convert dicom2png
     dicom2png(input_Dicom2PNG,output_Dicom2PNG,str_parse)
+    i += 1
+
+if i == len(corr_df):
+    print("All",i,"data found in",args["csv"],"have been converted.")
+else:
+    print("Not all data found in",args["csv"],"have been converted",i,"converted. .csv has",len(corr_df),"rows.")
     
