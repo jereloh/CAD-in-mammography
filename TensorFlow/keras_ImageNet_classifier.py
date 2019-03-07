@@ -1,6 +1,8 @@
 '''
 Learning Keras for image classification using imagenet
 $ export TF_CPP_MIN_LOG_LEVEL=2
+Reference = https://colab.research.google.com/github/tensorflow/docs/blob/master/site/en/tutorials/images/hub_with_keras.ipynb#scrollTo=PLcqg-RmsLno
+
 '''
 
 from __future__ import absolute_import, division, print_function

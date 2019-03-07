@@ -1,3 +1,7 @@
+'''
+Reference = https://colab.research.google.com/github/tensorflow/docs/blob/master/site/en/tutorials/images/hub_with_keras.ipynb#scrollTo=PLcqg-RmsLno
+'''
+
 import matplotlib.pylab as plt
 import tensorflow as tf
 import tensorflow_hub as hub
