@@ -1,5 +1,6 @@
 
-datasetPath = fullfile('/Users/xfler/Documents/GitHub/Year4_FYP/Images/Raw_CBIS_DDSM/Calcification-Training/AlexNet_RGB/');
+% Guide: https://www.mathworks.com/help/deeplearning/ref/alexnet.html#bvn44n6
+datasetPath = fullfile('/Users/xfler/Documents/GitHub/Year4_FYP/Images/CBIS_DDSM_PNG/Calcification-Training/AlexNet_RGB/');
 imds = imageDatastore(datasetPath,'IncludeSubfolders',true,'LabelSource','foldernames');
 [imdsTrain,imdsValidation] = splitEachLabel(imds,0.7,'randomized');
 
@@ -19,8 +20,7 @@ labelCount = countEachLabel(imds)
 % Select Pretrained network for transfer learning
 net = alexnet
 
-% analyzeNetwork(net)
-
+% AnalyzeNetwork(net)
 inputSize = net.Layers(1).InputSize
 
 % Replace Final Layers
@@ -31,7 +31,8 @@ layers = [
     fullyConnectedLayer(numClasses,'WeightLearnRateFactor',20,'BiasLearnRateFactor',20)
     softmaxLayer
     classificationLayer];
-% Train Network
+
+% Train Network arguments
 pixelRange = [-30 30];
 imageAugmenter = imageDataAugmenter( ...
     'RandXReflection',true, ...
@@ -50,7 +51,18 @@ options = trainingOptions('sgdm', ...
     'ValidationData',augimdsValidation, ...
     'ValidationFrequency',3, ...
     'Verbose',false, ...
-    'Plots','training-progress');
+    'Plots','training-progress', ...
+    'ExecutionEnvironment', 'cpu');
 
 netTransfer = trainNetwork(augimdsTrain,layers,options);
 
+[YPred,scores] = classify(netTransfer,augimdsValidation);
+idx = randperm(numel(imdsValidation.Files),4);
+figure
+for i = 1:4
+    subplot(2,2,i)
+    I = readimage(imdsValidation,idx(i));
+    imshow(I)
+    label = YPred(idx(i));
+    title(string(label));
+end
