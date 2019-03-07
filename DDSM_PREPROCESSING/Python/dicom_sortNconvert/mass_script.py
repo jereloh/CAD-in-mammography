@@ -97,7 +97,7 @@ chkFolder(args["input"]+"OTHERS") # In Case there are other values apart from BE
 print("Converting...")
 
 # Counter i, for checking number of conversions
-i = 0
+i = 1
 
 # Iterate through dataframe 
 for index, row in corr_df.iterrows():
