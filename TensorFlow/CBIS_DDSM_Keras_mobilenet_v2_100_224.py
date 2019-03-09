@@ -9,7 +9,7 @@ from tensorflow.keras import layers
 import numpy as np
 
 # [DATA INPUT] Where You put your Data
-data_root = ('/Users/xfler/Documents/GitHub/Year4_FYP/Images/CBIS_DDSM_PNG/Calcification-Training/AlexNet_RGB/')
+data_root = ('/Users/xfler/Documents/GitHub/Year4_FYP/Images/Masked/Mask_v0_1/alexnet_272_272/')
 
 # Generate Data from directory
 image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
@@ -30,6 +30,8 @@ for image_batch,label_batch in image_data:
   print("Image batch shape: ", image_batch.shape)
   print("Labe batch shape: ", label_batch.shape)
   break
+
+quit()
 
 # Wrap module in Keras layer
 features_extractor_layer = layers.Lambda(feature_extractor, input_shape=IMAGE_SIZE+[3])
