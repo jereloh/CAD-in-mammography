@@ -1,6 +1,7 @@
 
 % Guide: https://www.mathworks.com/help/deeplearning/ref/alexnet.html#bvn44n6
-datasetPath = fullfile('/Users/xfler/Documents/GitHub/Year4_FYP/Images/CBIS_DDSM_PNG/Calcification-Training/AlexNet_RGB/');
+datasetPath = fullfile('D:\CBIS_DDSM_PNG\masked_alexnet_272_272')
+%datasetPath = fullfile('/Users/xfler/Documents/GitHub/Year4_FYP/Images/CBIS_DDSM_PNG/Calcification-Training/AlexNet_RGB/');
 imds = imageDatastore(datasetPath,'IncludeSubfolders',true,'LabelSource','foldernames');
 [imdsTrain,imdsValidation] = splitEachLabel(imds,0.7,'randomized');
 
@@ -52,7 +53,7 @@ options = trainingOptions('sgdm', ...
     'ValidationFrequency',3, ...
     'Verbose',false, ...
     'Plots','training-progress', ...
-    'ExecutionEnvironment', 'cpu');
+    'ExecutionEnvironment', 'gpu');
 
 netTransfer = trainNetwork(augimdsTrain,layers,options);
 
