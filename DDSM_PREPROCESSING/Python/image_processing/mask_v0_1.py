@@ -13,9 +13,14 @@ import argparse
 import cv2
 import os
 import glob
+import time  
+import concurrent.futures
+from tqdm import tqdm
+import multiprocessing
+
  
 # [Function] masking Images script
-def maskImages(inputIM, outputIM):
+def maskImages(inputIM):
     # Load image
     image = cv2.imread(inputIM)
     
@@ -47,8 +52,10 @@ def maskImages(inputIM, outputIM):
         # Fill unwanted contours black
             cv2.fillPoly(imageFinal, pts = [cntUnwanted], color = (0,0,0))
     
-    # Testing, don't write first!
-    cv2.imwrite(outputIM,imageFinal)
+    # Prep Write file
+    toConvert_filename = inputIM.split("/").pop()
+    # Write file
+    cv2.imwrite(os.path.join(args["folder"],"Masked",toConvert_filename),imageFinal)
 
     '''
     # View images for troubleshooting
@@ -63,6 +70,8 @@ def maskImages(inputIM, outputIM):
 
     cv2.destroyAllWindows()
     '''
+    # for visualization of the loading bar
+    time.sleep(0.001)
 
 # [Function] Create necessary folder function
 def chkFolder(flder_path):
@@ -76,7 +85,9 @@ argparser.add_argument("-f", "--folder", required=True,
 	help="please insert path of the folder containing the images")
 args = vars(argparser.parse_args())
 
-# For progress bar
+chkFolder(args["folder"]+"Masked")
+'''
+# Progress bar
 i = 1
 
 # List of files ending with .png
@@ -91,5 +102,11 @@ for toConvert in files:
     print ("[",i,"/",len(files),"]",toConvert_filename)
     i +=1 
     # Mask
-    maskImages(toConvert,(os.path.join(args["folder"],"Masked",toConvert_filename)))
-    
+    maskImages(toConvert)
+'''
+files = glob.glob( args["folder"]+'*.png', recursive=True)
+
+# An attempt at parallel processing
+with concurrent.futures.ThreadPoolExecutor(multiprocessing.cpu_count()) as executor: 
+    list(tqdm(executor.map(maskImages, files), total=len(files)))
+    #executor.map(maskImages, files)
