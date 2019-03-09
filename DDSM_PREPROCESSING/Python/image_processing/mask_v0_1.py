@@ -1,5 +1,5 @@
 '''
-06_Final
+06_Final adapted
 [Goal]
 Learn how to:
 1. Create a function from 05_Save_AOI
@@ -12,9 +12,9 @@ Learn how to:
 import argparse
 import cv2
 import os
-import numpy as np# Display multiple images
+import glob
  
-
+# [Function] masking Images script
 def maskImages(inputIM, outputIM):
     # Load image
     image = cv2.imread(inputIM)
@@ -49,7 +49,10 @@ def maskImages(inputIM, outputIM):
     
     # Testing, don't write first!
     cv2.imwrite(outputIM,imageFinal)
+
     '''
+    # View images for troubleshooting
+    import numpy as np# Display multiple images
     # view image
     numpy_viewport = np.concatenate((imageInput,image_Gauzz, image, imageFinal),axis = 1)
     cv2.imshow("Viewport", numpy_viewport)
@@ -61,24 +64,32 @@ def maskImages(inputIM, outputIM):
     cv2.destroyAllWindows()
     '''
 
+# [Function] Create necessary folder function
+def chkFolder(flder_path):
+    if not os.path.exists(flder_path):
+        print ("Folder don't exist. Making..")
+        os.makedirs(flder_path)
+
 # construct argument parsing
 argparser = argparse.ArgumentParser()
 argparser.add_argument("-f", "--folder", required=True,
 	help="please insert path of the folder containing the images")
 args = vars(argparser.parse_args())
 
-osDIR = os.listdir(args["folder"])
-
 # For progress bar
 i = 1
-for toConvert in osDIR:
-    if toConvert.endswith(".png"):
-        if not os.path.exists(os.path.join(args["folder"],'Masked')):
-            os.mkdir(os.path.join(args["folder"],'Masked'))
-            print ("Created")
-        print ("[",i,"/",len(osDIR),"]",end= '')
-        i +=1 
-        print (os.path.join(args["folder"],"Masked",toConvert))
-        maskImages((os.path.join(args["folder"],toConvert)),(os.path.join(args["folder"],"Masked",toConvert)))
-        #print ("Converted:"+os.path.join(args["folder"],"Masked",toConvert))
-        
+
+# List of files ending with .png
+files = glob.glob( args["folder"]+'*.png', recursive=True)
+
+chkFolder(args["folder"]+"Masked")
+
+# Iterator for conversion
+for toConvert in files:
+    toConvert_filename = toConvert.split(",").pop()
+    # Update progress bar
+    print ("[",i,"/",len(files),"]",toConvert_filename)
+    i +=1 
+    # Mask
+    maskImages(toConvert,(os.path.join(args["folder"],"Masked",toConvert_filename)))
+    
