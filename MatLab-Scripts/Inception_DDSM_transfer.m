@@ -20,7 +20,7 @@ labelCount = countEachLabel(imds)
 
 % Select Pretrained network for transfer learning
 % Others: https://www.mathworks.com/help/deeplearning/ug/pretrained-convolutional-neural-networks.html
-net = inceptionv3
+net = alexnet
 
 % AnalyzeNetwork(net)
 inputSize = net.Layers(1).InputSize
