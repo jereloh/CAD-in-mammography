@@ -1,6 +1,9 @@
 '''
 Reference = https://www.tensorflow.org/tutorials/images/hub_with_keras
 '''
+#from tensorflow.python.client import device_lib
+#print(device_lib.list_local_devices())
+#quit()
 
 import matplotlib.pylab as plt
 import tensorflow as tf
@@ -49,10 +52,14 @@ model.summary()
 
 # [TFHub Initialize] - based on current parameters
 import tensorflow.keras.backend as K
+
 sess = K.get_session()
 init = tf.global_variables_initializer()
 sess.run(init)
 
+from tensorflow.python.client import device_lib
+print(device_lib.list_local_devices())
+quit()
 # Test single bach
 #result = model.predict(image_batch)
 #print (result.shape)
@@ -76,7 +83,9 @@ class CollectBatchStats(tf.keras.callbacks.Callback):
         self.batch_acc.append(logs['acc'])
 
 steps_per_epoch = image_data.samples//image_data.batch_size
+
 batch_stats = CollectBatchStats()
+
 model.fit((item for item in image_data), epochs=1, 
                     steps_per_epoch=steps_per_epoch,
                     callbacks = [batch_stats])
@@ -95,6 +104,8 @@ plt.ylim([0,1])
 plt.plot(batch_stats.batch_acc)
 
 # plt.show()
+export_path = tf.contrib.saved_model.save_keras_model(model, r"D:\\CBIS_DDSM_PNG\\Classification_Keras_mobilenet_v2_100_224")
+print(export_path)
 
 # PREDICTIONS
 # Check Prediction # modify this!
@@ -102,16 +113,19 @@ image_dataPredict = image_generator.flow_from_directory(str(data_root),shuffle=F
 
 #FInd filenames
 #print (image_data.filenames)
+label_filenames = np.array(image_dataPredict.filenames)
 
 nb_samples = len(image_dataPredict.filenames)
 result_batch = model.predict_generator(image_dataPredict, steps = nb_samples)
 
+class_names = np.array(result_batch.argmax(axis=-1))
+
 label_names = sorted(image_dataPredict.class_indices.items(), key=lambda pair:pair[1])
 label_names = np.array([key.title() for key, value in label_names])
-labels_batch = label_names[np.argmax(result_batch, axis=-1)]
+labels_batch = np.array(label_names[np.argmax(result_batch, axis=-1)])
 
-print(labels_batch)
-
+prediction = np.column_stack((label_filenames,class_names,labels_batch))
+np.savetxt("test.csv", prediction, delimiter=",")
 
 #export_path = tf.contrib.saved_model.save_keras_model(model, "D:\CBIS_DDSM_PNG\Classification_Keras_mobilenet_v2_100_224")
 #print(export_path)

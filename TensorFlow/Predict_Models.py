@@ -6,11 +6,22 @@ import tensorflow_hub as hub
 from tensorflow.keras import layers
 import numpy as np
 
-# [DATA INPUT] Where You put your Data
+# [DATA INPUT] Where You put your Data MEANT FOR PREDICTIOn
 data_root = (r'D:\\CBIS_DDSM_PNG\\UNMASKED\\CALC')
+# Generate Data from directory
+image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
+
+# [Classifier]
+feature_extractor_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/2"
+
+def feature_extractor(x):
+  feature_extractor_module = hub.Module(feature_extractor_url)
+  return feature_extractor_module(x)
+
+IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
 
 # [RESTORE model]
-saved_model_path = 'D:\\CBIS_DDSM_PNG\\1552308961-keras\\'
+saved_model_path = r'D:\\CBIS_DDSM_PNG\\Classification_Keras_mobilenet_v2_100_224\\1555009140'
 new_model = tf.contrib.saved_model.load_keras_model(saved_model_path)
 new_model.summary()
 
@@ -36,14 +47,10 @@ image_dataPredict = image_generator.flow_from_directory(str(data_root),shuffle=F
 #print (image_data.filenames)
 
 nb_samples = len(image_dataPredict.filenames)
-result_batch = model.predict_generator(image_dataPredict, steps = nb_samples)
+result_batch = new_model.predict_generator(image_dataPredict, steps = nb_samples)
 
 label_names = sorted(image_dataPredict.class_indices.items(), key=lambda pair:pair[1])
 label_names = np.array([key.title() for key, value in label_names])
 labels_batch = label_names[np.argmax(result_batch, axis=-1)]
 
 print(labels_batch)
-
-
-#export_path = tf.contrib.saved_model.save_keras_model(model, "D:\CBIS_DDSM_PNG\Classification_Keras_mobilenet_v2_100_224")
-#print(export_path)
