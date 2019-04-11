@@ -53,7 +53,7 @@ def maskImages(inputIM):
             cv2.fillPoly(imageFinal, pts = [cntUnwanted], color = (0,0,0))
     
     # Prep Write file
-    toConvert_filename = inputIM.split("/").pop()
+    toConvert_filename = inputIM.split("\\").pop()
     # Write file
     cv2.imwrite(os.path.join(args["folder"],"Masked",toConvert_filename),imageFinal)
 
@@ -86,25 +86,8 @@ argparser.add_argument("-f", "--folder", required=True,
 args = vars(argparser.parse_args())
 
 chkFolder(args["folder"]+"Masked")
-'''
-# Progress bar
-i = 1
 
-# List of files ending with .png
-files = glob.glob( args["folder"]+'*.png', recursive=True)
-
-chkFolder(args["folder"]+"Masked")
-
-# Iterator for conversion
-for toConvert in files:
-    toConvert_filename = toConvert.split(",").pop()
-    # Update progress bar
-    print ("[",i,"/",len(files),"]",toConvert_filename)
-    i +=1 
-    # Mask
-    maskImages(toConvert)
-'''
-files = glob.glob( args["folder"]+'*.png', recursive=True)
+files = glob.glob( os.path.join(args["folder"],'*.png'), recursive=True)
 
 # An attempt at parallel processing
 with concurrent.futures.ThreadPoolExecutor(multiprocessing.cpu_count()) as executor: 

@@ -23,7 +23,7 @@ def downsample(file):
         new_height = int(height)
         img = img.resize((new_width, new_height), Image.ANTIALIAS) # High quality downsampling filter
         # Obtain file name
-        png_name = file.split("/")
+        png_name = file.split("\\")
         img.save(os.path.join(img_out,png_name[len(png_name)-1]))
     except:
         print("failed")
@@ -52,7 +52,7 @@ except:
 img_out = os.path.join(args["input"],args["name"]+"_"+args["size"])
 chkFolder(img_out)
 
-list_of_PNGs = glob.glob( args["input"]+'/*.png', recursive=True) # Ensures only look for .png
+list_of_PNGs = glob.glob( os.path.join(args["input"],'*.png'), recursive=True) # Ensures only look for .png
 
 # An attempt at parallel processing
 with concurrent.futures.ThreadPoolExecutor(multiprocessing.cpu_count()) as executor: 

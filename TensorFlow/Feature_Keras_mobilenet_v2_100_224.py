@@ -9,7 +9,7 @@ from tensorflow.keras import layers
 import numpy as np
 
 # [DATA INPUT] Where You put your Data
-data_root = ('/Users/xfler/Documents/GitHub/Year4_FYP/Images/Masked/Mask_v0_1/alexnet_272_272/')
+data_root = (r'D:\\CBIS_DDSM_PNG\\unmasked_raw')
 
 # Generate Data from directory
 image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
@@ -31,7 +31,6 @@ for image_batch,label_batch in image_data:
   print("Labe batch shape: ", label_batch.shape)
   break
 
-quit()
 
 # Wrap module in Keras layer
 features_extractor_layer = layers.Lambda(feature_extractor, input_shape=IMAGE_SIZE+[3])
@@ -75,7 +74,7 @@ class CollectBatchStats(tf.keras.callbacks.Callback):
 
 steps_per_epoch = image_data.samples//image_data.batch_size
 batch_stats = CollectBatchStats()
-model.fit((item for item in image_data), epochs=500, 
+model.fit((item for item in image_data), epochs=100, 
                     steps_per_epoch=steps_per_epoch,
                     callbacks = [batch_stats])
 
@@ -100,9 +99,9 @@ label_names
 result_batch = model.predict(image_batch)
 
 labels_batch = label_names[np.argmax(result_batch, axis=-1)]
-labels_batch
+print(labels_batch)
 
-plt.show()
+#plt.show()
 
 plt.figure(figsize=(10,9))
 for n in range(30):
@@ -113,5 +112,5 @@ for n in range(30):
 _ = plt.suptitle("Model predictions")
 
 
-#export_path = tf.contrib.saved_model.save_keras_model(model, "./saved_models")
-#export_path
+export_path = tf.contrib.saved_model.save_keras_model(model, "D:\\CBIS_DDSM_PNG\\unmasked_raw")
+print(export_path)
