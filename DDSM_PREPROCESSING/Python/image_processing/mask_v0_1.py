@@ -17,7 +17,6 @@ import time
 import concurrent.futures
 from tqdm import tqdm
 import multiprocessing
-
  
 # [Function] masking Images script
 def maskImages(inputIM):
@@ -52,8 +51,14 @@ def maskImages(inputIM):
         # Fill unwanted contours black
             cv2.fillPoly(imageFinal, pts = [cntUnwanted], color = (0,0,0))
     
-    # Prep Write file
-    toConvert_filename = inputIM.split("\\").pop()
+    # Prep Write file and check if UNIX or not
+    if os.name == 'posix':
+        toConvert_filename = inputIM.split("/").pop()
+    elif os.name == 'nt':
+        toConvert_filename = inputIM.split("\\").pop()
+    else:
+        print ("Operating System not supported: "+os.name)
+        quit()
     # Write file
     cv2.imwrite(os.path.join(args["folder"],"Masked",toConvert_filename),imageFinal)
 
