@@ -60,6 +60,7 @@ def maskImages(inputIM):
         print ("Operating System not supported: "+os.name)
         quit()
     # Write file
+    #print(os.path.join(args["folder"],"Masked",toConvert_filename))
     cv2.imwrite(os.path.join(args["folder"],"Masked",toConvert_filename),imageFinal)
 
     '''

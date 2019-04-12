@@ -21,7 +21,7 @@ def feature_extractor(x):
 IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
 
 # [RESTORE model]
-saved_model_path = r'D:\\CBIS_DDSM_PNG\\Classification_Keras_mobilenet_v2_100_224\\1555009140'
+saved_model_path = r'D:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555009140_Unmasked_EPOCH1'
 new_model = tf.contrib.saved_model.load_keras_model(saved_model_path)
 new_model.summary()
 
@@ -38,9 +38,8 @@ sess = K.get_session()
 init = tf.global_variables_initializer()
 sess.run(init)
 
-
 #  PREDICTIONS
-# Check Prediction # modify this!
+# Check Prediction # modify this! Suffle false to not reorder in index
 image_dataPredict = image_generator.flow_from_directory(str(data_root),shuffle=False, target_size=IMAGE_SIZE)
 
 #FInd filenames
@@ -52,5 +51,22 @@ result_batch = new_model.predict_generator(image_dataPredict, steps = nb_samples
 label_names = sorted(image_dataPredict.class_indices.items(), key=lambda pair:pair[1])
 label_names = np.array([key.title() for key, value in label_names])
 labels_batch = label_names[np.argmax(result_batch, axis=-1)]
+label_filenames = np.array(result_batch.filenames[0])
 
-print(labels_batch)
+'''
+np.savetxt("labels_batch.csv", labels_batch, delimiter=",")
+
+label_filenames = np.array(image_dataPredict.filenames)
+prediction = np.column_stack((label_filenames,labels_batch))
+print(prediction)
+
+np.savetxt("test.csv", prediction, delimiter=",")
+
+https://stackoverflow.com/questions/41715025/keras-flowfromdirectory-get-file-names-as-they-are-being-generated/54918559#54918559
+
+with open('prediction1.csv', mode='w') as prediction_file:
+  for n in range(nb_samples):
+    prediction_file.write(label_filenames[n].replace("\\",",")+","+labels_batch[n]+"\n")
+'''
+
+

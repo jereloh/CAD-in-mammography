@@ -19,7 +19,7 @@ image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
 image_data = image_generator.flow_from_directory(str(data_root))
 
 # Network Vector selected:
-feature_extractor_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/2"
+feature_extractor_url = "https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1"
 
 
 # Create the module, and check the expected image size:
@@ -104,8 +104,10 @@ plt.ylim([0,1])
 plt.plot(batch_stats.batch_acc)
 
 # plt.show()
-export_path = tf.contrib.saved_model.save_keras_model(model, r"D:\\CBIS_DDSM_PNG\\Classification_Keras_mobilenet_v2_100_224")
+export_path = tf.contrib.saved_model.save_keras_model(model, r"D:\\CBIS_DDSM_PNG\\Classification_Keras_inception_v3")
 print(export_path)
+
+quit()
 
 # PREDICTIONS
 # Check Prediction # modify this!
@@ -126,6 +128,3 @@ labels_batch = np.array(label_names[np.argmax(result_batch, axis=-1)])
 
 prediction = np.column_stack((label_filenames,class_names,labels_batch))
 np.savetxt("test.csv", prediction, delimiter=",")
-
-#export_path = tf.contrib.saved_model.save_keras_model(model, "D:\CBIS_DDSM_PNG\Classification_Keras_mobilenet_v2_100_224")
-#print(export_path)

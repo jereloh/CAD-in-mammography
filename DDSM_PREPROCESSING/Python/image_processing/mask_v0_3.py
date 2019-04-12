@@ -27,11 +27,11 @@ def maskImages(inputIM):
     imageInput = image.copy()
 
     '''
-    new image_wBorder to create border line 34
+    new line 34, 100 to 120
     '''
     # Create border? https://docs.opencv.org/3.4/dc/da3/tutorial_copyMakeBorder.html
     # Initialize arguments for the filter
-    image_wBorder = cv2.rectangle(imageInput, (0, 0), (image.shape[1],image.shape[0]), (0,0,0), 100)
+    image_wBorder = cv2.rectangle(imageInput, (0, 0), (image.shape[1],image.shape[0]), (0,0,0), 120)
 
     # Gausian blurring before finding contours
     image_Gauzz = cv2.GaussianBlur(image_wBorder,(5,5),0)
@@ -46,7 +46,7 @@ def maskImages(inputIM):
     # Display contour
     imageFinal = image_wBorder.copy()
     
-    cv2.drawContours(image, contours, -1, (0,255,255), 3)
+    #cv2.drawContours(image, contours, -1, (0,255,255), 3)
 
     # Filter Contours Area
     cntArea = [ ]
