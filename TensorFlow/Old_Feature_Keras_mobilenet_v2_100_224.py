@@ -107,7 +107,7 @@ plt.figure(figsize=(10,9))
 for n in range(30):
   plt.subplot(6,5,n+1)
   plt.imshow(image_batch[n])
-  plt.title(labels_batch[n])
+  plt.title(image_batch.filenames[n],labels_batch[n])
   plt.axis('off')
 _ = plt.suptitle("Model predictions")
 

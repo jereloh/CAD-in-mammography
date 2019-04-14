@@ -58,8 +58,7 @@ init = tf.global_variables_initializer()
 sess.run(init)
 
 from tensorflow.python.client import device_lib
-print(device_lib.list_local_devices())
-quit()
+
 # Test single bach
 #result = model.predict(image_batch)
 #print (result.shape)
@@ -86,7 +85,7 @@ steps_per_epoch = image_data.samples//image_data.batch_size
 
 batch_stats = CollectBatchStats()
 
-model.fit((item for item in image_data), epochs=1, 
+model.fit((item for item in image_data), epochs=100, 
                     steps_per_epoch=steps_per_epoch,
                     callbacks = [batch_stats])
 
@@ -104,7 +103,7 @@ plt.ylim([0,1])
 plt.plot(batch_stats.batch_acc)
 
 # plt.show()
-export_path = tf.contrib.saved_model.save_keras_model(model, r"D:\\CBIS_DDSM_PNG\\Classification_Keras_inception_v3")
+export_path = tf.contrib.saved_model.save_keras_model(model, r"D:\\CBIS_DDSM_PNG\\Feature_Keras_inception_v3")
 print(export_path)
 
 quit()

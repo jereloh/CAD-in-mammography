@@ -5,6 +5,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 from tensorflow.keras import layers
 import numpy as np
+import os
 
 # [DATA INPUT] Where You put your Data MEANT FOR PREDICTIOn
 data_root = (r'D:\\CBIS_DDSM_PNG\\UNMASKED\\CALC')
@@ -51,22 +52,24 @@ result_batch = new_model.predict_generator(image_dataPredict, steps = nb_samples
 label_names = sorted(image_dataPredict.class_indices.items(), key=lambda pair:pair[1])
 label_names = np.array([key.title() for key, value in label_names])
 labels_batch = label_names[np.argmax(result_batch, axis=-1)]
-label_filenames = np.array(result_batch.filenames[0])
 
-'''
-np.savetxt("labels_batch.csv", labels_batch, delimiter=",")
+print (result_batch)
+
+#https://stackoverflow.com/questions/49973379/how-to-get-associated-image-name-when-using-predict-generator-in-keras
 
 label_filenames = np.array(image_dataPredict.filenames)
-prediction = np.column_stack((label_filenames,labels_batch))
-print(prediction)
-
-np.savetxt("test.csv", prediction, delimiter=",")
-
-https://stackoverflow.com/questions/41715025/keras-flowfromdirectory-get-file-names-as-they-are-being-generated/54918559#54918559
-
-with open('prediction1.csv', mode='w') as prediction_file:
+acc = 0
+with open(os.path.join(saved_model_path,'prediction_altMethod.csv'), mode='w') as prediction_file:
+  
   for n in range(nb_samples):
-    prediction_file.write(label_filenames[n].replace("\\",",")+","+labels_batch[n]+"\n")
-'''
+    #print (label_filenames[n])
+    label_folder, label_filename = label_filenames[n].split("\\")
+    if label_folder.lower() == labels_batch[n].lower(): #ignore case
+      acc += 1
+    prediction_file.write(label_filename+","+label_folder+","+labels_batch[n]+","+ str(result_batch[n][0])+","+str(result_batch[n][1])+"\n")
+  prediction_file.write(str(acc/nb_samples))
+  print (acc/nb_samples * 100)
+
+#consider plotting 30 and looking at the plot referencing to the file name?
 
 

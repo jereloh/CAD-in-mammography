@@ -83,7 +83,7 @@ steps_per_epoch = image_data.samples//image_data.batch_size
 
 batch_stats = CollectBatchStats()
 
-model.fit((item for item in image_data), epochs=1, 
+model.fit((item for item in image_data), epochs=100, 
                     steps_per_epoch=steps_per_epoch,
                     callbacks = [batch_stats])
 
@@ -101,7 +101,7 @@ plt.ylim([0,1])
 plt.plot(batch_stats.batch_acc)
 
 # plt.show()
-export_path = tf.contrib.saved_model.save_keras_model(model, r"D:\\CBIS_DDSM_PNG\\Classification_Keras_mobilenet_v2_100_224")
+export_path = tf.contrib.saved_model.save_keras_model(model, r"D:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224")
 print(export_path)
 
 quit()
