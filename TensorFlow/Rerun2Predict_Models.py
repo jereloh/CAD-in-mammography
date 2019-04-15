@@ -7,8 +7,6 @@ from tensorflow.keras import layers
 import numpy as np
 import os
 
-# [DATA INPUT] Where You put your Data MEANT FOR PREDICTIOn
-data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
 # Generate Data from directory
 image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
 
@@ -24,7 +22,7 @@ IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
 # [RESTORE model]
 saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555089736_Masked_EPOCH100'
 new_model = tf.contrib.saved_model.load_keras_model(saved_model_path)
-new_model.summary()
+#new_model.summary()
 
 # The model has to be compiled before evaluating.
 # This step is not required if the saved model is only being deployed.
@@ -42,8 +40,8 @@ sess.run(init)
 #  PREDICTIONS
 # Check Prediction # modify this! Suffle false to not reorder in index
 # prediction directory
-predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
-image_dataPredict = image_generator.flow_from_directory(str(data_root),shuffle=False, target_size=IMAGE_SIZE)
+predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3_Testing')
+image_dataPredict = image_generator.flow_from_directory(str(predict_data_root),shuffle=False, target_size=IMAGE_SIZE)
 
 #FInd filenames
 #print (image_data.filenames)
@@ -55,13 +53,13 @@ label_names = sorted(image_dataPredict.class_indices.items(), key=lambda pair:pa
 label_names = np.array([key.title() for key, value in label_names])
 labels_batch = label_names[np.argmax(result_batch, axis=-1)]
 
-print (result_batch)
+#print (result_batch)
 
 #https://stackoverflow.com/questions/49973379/how-to-get-associated-image-name-when-using-predict-generator-in-keras
 
 label_filenames = np.array(image_dataPredict.filenames)
 acc = 0
-with open(os.path.join(saved_model_path,'prediction.csv'), mode='w') as prediction_file:
+with open(os.path.join(predict_data_root,'Prediction.csv'), mode='w') as prediction_file:
 
   for n in range(nb_samples):
     #print (label_filenames[n])
