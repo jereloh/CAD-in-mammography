@@ -12,7 +12,7 @@ from tensorflow.keras import layers
 import numpy as np  
 
 # [DATA INPUT] Where You put your Data
-data_root = (r'D:\\CBIS_DDSM_PNG\\UNMASKED\\CALC')
+data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
 
 # Generate Data from directory
 image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
@@ -103,7 +103,7 @@ plt.ylim([0,1])
 plt.plot(batch_stats.batch_acc)
 
 # plt.show()
-export_path = tf.contrib.saved_model.save_keras_model(model, r"D:\\CBIS_DDSM_PNG\\Feature_Keras_inception_v3")
+export_path = tf.contrib.saved_model.save_keras_model(model, r"F:\\CBIS_DDSM_PNG\\Feature_Keras_inception_v3")
 print(export_path)
 
 quit()

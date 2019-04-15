@@ -121,9 +121,10 @@ for index, row in corr_df.iterrows():
 
     # Convert dicom2png
     dicom2png(input_Dicom2PNG,output_Dicom2PNG,str_parse)
-    i += 1
+    if i!= len(corr_df):
+        i += 1
 
 if i == len(corr_df):
     print("All",i,"data found in",args["csv"],"have been converted.")
 else:
-    print("Not all data found in",args["csv"],"have been converted",i,"converted. .csv has",len(corr_df),"rows.")
+    print("Not all data found in",args["csv"],"have been converted.",i,"converted. .csv has",len(corr_df),"rows.")

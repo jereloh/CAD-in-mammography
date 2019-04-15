@@ -8,7 +8,7 @@ import numpy as np
 import os
 
 # [DATA INPUT] Where You put your Data MEANT FOR PREDICTIOn
-data_root = (r'D:\\CBIS_DDSM_PNG\\UNMASKED\\CALC')
+data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
 # Generate Data from directory
 image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
 
@@ -22,7 +22,7 @@ def feature_extractor(x):
 IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
 
 # [RESTORE model]
-saved_model_path = r'D:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555009140_Unmasked_EPOCH1'
+saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555089736_Masked_EPOCH100'
 new_model = tf.contrib.saved_model.load_keras_model(saved_model_path)
 new_model.summary()
 
@@ -41,6 +41,8 @@ sess.run(init)
 
 #  PREDICTIONS
 # Check Prediction # modify this! Suffle false to not reorder in index
+# prediction directory
+predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
 image_dataPredict = image_generator.flow_from_directory(str(data_root),shuffle=False, target_size=IMAGE_SIZE)
 
 #FInd filenames
@@ -59,8 +61,8 @@ print (result_batch)
 
 label_filenames = np.array(image_dataPredict.filenames)
 acc = 0
-with open(os.path.join(saved_model_path,'prediction_altMethod.csv'), mode='w') as prediction_file:
-  
+with open(os.path.join(saved_model_path,'prediction.csv'), mode='w') as prediction_file:
+
   for n in range(nb_samples):
     #print (label_filenames[n])
     label_folder, label_filename = label_filenames[n].split("\\")
@@ -71,5 +73,3 @@ with open(os.path.join(saved_model_path,'prediction_altMethod.csv'), mode='w') a
   print (acc/nb_samples * 100)
 
 #consider plotting 30 and looking at the plot referencing to the file name?
-
-
