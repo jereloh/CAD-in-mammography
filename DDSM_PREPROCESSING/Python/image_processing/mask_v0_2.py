@@ -75,7 +75,6 @@ def maskImages(inputIM):
     # Write file
     cv2.imwrite(os.path.join(args["folder"],"Masked",toConvert_filename),imageFinal)
 
-    
     # View images for troubleshooting
     import numpy as np# Display multiple images
     # view image
