@@ -1,6 +1,6 @@
 
 % Guide: https://www.mathworks.com/help/deeplearning/ref/alexnet.html#bvn44n6
-datasetPath = fullfile('D:\CBIS_DDSM_PNG\masked_alexnet_272_272')
+datasetPath = fullfile('F:\CBIS_DDSM_PNG\MASKED\Calc_Mask_v0_3_alexnet')
 %datasetPath = fullfile('/Users/xfler/Documents/GitHub/Year4_FYP/Images/CBIS_DDSM_PNG/Calcification-Training/AlexNet_RGB/');
 imds = imageDatastore(datasetPath,'IncludeSubfolders',true,'LabelSource','foldernames');
 [imdsTrain,imdsValidation] = splitEachLabel(imds,0.7,'randomized');
@@ -20,7 +20,7 @@ labelCount = countEachLabel(imds)
 
 % Select Pretrained network for transfer learning
 % Others: https://www.mathworks.com/help/deeplearning/ug/pretrained-convolutional-neural-networks.html
-net = inceptionv3
+net = alexnet
 
 % AnalyzeNetwork(net)
 inputSize = net.Layers(1).InputSize
@@ -68,3 +68,9 @@ for i = 1:4
     label = YPred(idx(i));
     title(string(label));
 end
+
+YValidation = imdsValidation.Labels;
+accuracy = mean(YPred == YValidation)
+
+cbis_ddsm_alexnet = netTransfer
+save cbis_ddsm_alexnet

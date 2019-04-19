@@ -20,7 +20,7 @@ def feature_extractor(x):
 IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
 
 # [RESTORE model]
-saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555089736_Masked_EPOCH100'
+saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555397193_Masked_EPOCH200'
 new_model = tf.contrib.saved_model.load_keras_model(saved_model_path)
 #new_model.summary()
 
@@ -41,12 +41,20 @@ sess.run(init)
 # Check Prediction # modify this! Suffle false to not reorder in index
 # prediction directory
 predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3_Testing')
-image_dataPredict = image_generator.flow_from_directory(str(predict_data_root),shuffle=False, target_size=IMAGE_SIZE)
+#no. of files
+image_dataPredict_numfile = image_generator.flow_from_directory(str(predict_data_root),shuffle=False, target_size=IMAGE_SIZE)
+
+nb_samples = len(image_dataPredict_numfile.filenames)
+
+image_dataPredict = image_generator.flow_from_directory(str(predict_data_root),shuffle=False, target_size=IMAGE_SIZE,batch_size = nb_samples) # change batch size check why?
+for image_batch,label_batch in image_dataPredict:
+  print("Image batch shape: ", image_batch.shape)
+  print("Labe batch shape: ", label_batch.shape)
+  break
 
 #FInd filenames
 #print (image_data.filenames)
 
-nb_samples = len(image_dataPredict.filenames)
 result_batch = new_model.predict_generator(image_dataPredict, steps = nb_samples)
 
 label_names = sorted(image_dataPredict.class_indices.items(), key=lambda pair:pair[1])
@@ -59,6 +67,7 @@ labels_batch = label_names[np.argmax(result_batch, axis=-1)]
 
 label_filenames = np.array(image_dataPredict.filenames)
 acc = 0
+prediction_acc = ""
 with open(os.path.join(predict_data_root,'Prediction.csv'), mode='w') as prediction_file:
 
   for n in range(nb_samples):
@@ -67,7 +76,22 @@ with open(os.path.join(predict_data_root,'Prediction.csv'), mode='w') as predict
     if label_folder.lower() == labels_batch[n].lower(): #ignore case
       acc += 1
     prediction_file.write(label_filename+","+label_folder+","+labels_batch[n]+","+ str(result_batch[n][0])+","+str(result_batch[n][1])+"\n")
+  
   prediction_file.write(str(acc/nb_samples))
-  print (acc/nb_samples * 100)
+  prediction_acc= str(acc/nb_samples * 100)
+  print (prediction_acc)
+
+plt.figure(figsize=(10,9))
+
+for n in range(nb_samples):
+
+  plt.subplot(22,13,n+1)
+  plt.imshow(image_batch[n])
+  label_folder, label_filename = label_filenames[n].split("\\")
+  plt.title(label_folder+"_"+label_filename.replace(".png","")+"_"+labels_batch[n], fontsize=5)
+  plt.axis('off')
+_ = plt.suptitle("Model predictions: "+prediction_acc)
+
+plt.show()
 
 #consider plotting 30 and looking at the plot referencing to the file name?

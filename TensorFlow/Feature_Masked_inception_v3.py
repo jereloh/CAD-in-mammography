@@ -85,7 +85,7 @@ steps_per_epoch = image_data.samples//image_data.batch_size
 
 batch_stats = CollectBatchStats()
 
-model.fit((item for item in image_data), epochs=100, 
+model.fit((item for item in image_data), epochs=200, 
                     steps_per_epoch=steps_per_epoch,
                     callbacks = [batch_stats])
 
@@ -102,28 +102,6 @@ plt.xlabel("Training Steps")
 plt.ylim([0,1])
 plt.plot(batch_stats.batch_acc)
 
-# plt.show()
+plt.show()
 export_path = tf.contrib.saved_model.save_keras_model(model, r"F:\\CBIS_DDSM_PNG\\Feature_Keras_inception_v3")
 print(export_path)
-
-quit()
-
-# PREDICTIONS
-# Check Prediction # modify this!
-image_dataPredict = image_generator.flow_from_directory(str(data_root),shuffle=False, target_size=IMAGE_SIZE)
-
-#FInd filenames
-#print (image_data.filenames)
-label_filenames = np.array(image_dataPredict.filenames)
-
-nb_samples = len(image_dataPredict.filenames)
-result_batch = model.predict_generator(image_dataPredict, steps = nb_samples)
-
-class_names = np.array(result_batch.argmax(axis=-1))
-
-label_names = sorted(image_dataPredict.class_indices.items(), key=lambda pair:pair[1])
-label_names = np.array([key.title() for key, value in label_names])
-labels_batch = np.array(label_names[np.argmax(result_batch, axis=-1)])
-
-prediction = np.column_stack((label_filenames,class_names,labels_batch))
-np.savetxt("test.csv", prediction, delimiter=",")
