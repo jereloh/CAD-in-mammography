@@ -23,16 +23,19 @@ def downsample(file):
         new_height = int(height)
         img = img.resize((new_width, new_height), Image.ANTIALIAS) # High quality downsampling filter
         # Obtain file name
-        png_name = file.split("\\")
+
+        if os.name == 'posix':
+            png_name = file.split("/")
+        elif os.name == 'nt':
+            png_name = file.split("\\")
+        else:
+            print ("Operating System not supported: "+os.name)
+            quit()
         img.save(os.path.join(img_out,png_name[len(png_name)-1]))
     except:
         print("failed")
-        quit()
-        
+        quit()        
 
-'''
-[MAIN]
-'''
 # Construct argument parsing
 argparser = argparse.ArgumentParser()
 argparser.add_argument( "-n", "--name", required=True,
@@ -57,4 +60,3 @@ list_of_PNGs = glob.glob( os.path.join(args["input"],'*.png'), recursive=True) #
 # An attempt at parallel processing
 with concurrent.futures.ThreadPoolExecutor(multiprocessing.cpu_count()) as executor: 
     list(tqdm(executor.map(downsample, list_of_PNGs), total=len(list_of_PNGs)))
-

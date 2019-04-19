@@ -9,11 +9,8 @@ Learn how to:
 
 # import necessary packages
 
-import argparse
+import argparse, os, glob, time
 import cv2
-import os
-import glob
-import time  
 import concurrent.futures
 from tqdm import tqdm
 import multiprocessing
@@ -34,7 +31,8 @@ def maskImages(inputIM):
     thresh = cv2.threshold(gray, 10, 255, cv2.THRESH_BINARY)[1]
 
     # Finding Contours
-    contours= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0] # only need outer contours so we use RETR_EXTERNAL
+    contours= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0] 
+    # only need outer contours so we use RETR_EXTERNAL
 
     # Display contour
     imageFinal = image.copy()
@@ -73,7 +71,6 @@ def maskImages(inputIM):
     k = cv2.waitKey(0)
     while k != 27:
         k = cv2.waitKey(0)
-
     cv2.destroyAllWindows()
     '''
     # for visualization of the loading bar

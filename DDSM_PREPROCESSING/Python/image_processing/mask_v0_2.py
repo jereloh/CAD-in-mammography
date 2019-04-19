@@ -9,11 +9,8 @@ Learn how to:
 
 # import necessary packages
 
-import argparse
+import argparse, os, glob, time
 import cv2
-import os
-import glob
-import time  
 import concurrent.futures
 from tqdm import tqdm
 import multiprocessing
@@ -31,7 +28,7 @@ def maskImages(inputIM):
     '''
     # Create border? https://docs.opencv.org/3.4/dc/da3/tutorial_copyMakeBorder.html
     # Initialize arguments for the filter
-    image_wBorder = cv2.rectangle(imageInput, (0, 0), (image.shape[1],image.shape[0]), (0,0,0), 100)
+    image_wBorder = cv2.rectangle(imageInput, (0, 0), (image.shape[1],image.shape[0]), (0,0,0), 120)
 
     # Gausian blurring before finding contours
     image_Gauzz = cv2.GaussianBlur(image_wBorder,(5,5),0)
@@ -41,12 +38,13 @@ def maskImages(inputIM):
     thresh = cv2.threshold(gray, 10, 255, cv2.THRESH_BINARY)[1]
 
     # Finding Contours
-    contours= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0] # only need outer contours so we use RETR_EXTERNAL
+    contours= cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0] 
+    # only need outer contours so we use RETR_EXTERNAL
 
     # Display contour
     imageFinal = image_wBorder.copy()
     
-    cv2.drawContours(image, contours, -1, (0,255,255), 3)
+    cv2.drawContours(image_wBorder, contours, -1, (0,255,255), 3)
 
     # Filter Contours Area
     cntArea = [ ]
@@ -71,7 +69,7 @@ def maskImages(inputIM):
     # View images for troubleshooting
     import numpy as np# Display multiple images
     # view image
-    numpy_viewport = np.concatenate((imageInput, image_wBorder, image_Gauzz, imageFinal),axis = 1)
+    numpy_viewport = np.concatenate((image, image_wBorder, imageFinal),axis = 1)
     #numpy_viewport = np.concatenate((image_wBorder),axis = 1)
     #Call Viewpoert
     cv2.namedWindow("Viewport", cv2.WINDOW_NORMAL)
@@ -84,7 +82,7 @@ def maskImages(inputIM):
         k = cv2.waitKey(0)
 
     cv2.destroyAllWindows()
-    '''
+
     # for visualization of the loading bar
     time.sleep(0.001)
 
@@ -103,9 +101,11 @@ args = vars(argparser.parse_args())
 chkFolder(args["folder"]+"Masked")
 
 files = glob.glob( os.path.join(args["folder"],'*.png'), recursive=True)
+maskImages(files[0])
 #For trouble shooting 
-
+'''
 # An attempt at parallel processing
 with concurrent.futures.ThreadPoolExecutor(multiprocessing.cpu_count()) as executor: 
     list(tqdm(executor.map(maskImages, files), total=len(files)))
     #executor.map(maskImages, files)
+'''
