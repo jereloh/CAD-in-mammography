@@ -39,7 +39,7 @@ image_Predict = image_generator.flow_from_directory(str(predict_data_root),shuff
 result_predict = restore_model.predict_generator(image_Predict, steps = nb_samples)
 correct = 0
 for i, n in enumerate(image_Predict.filenames):
-    if n.startswith("MAGLIGNANT") and result_predict[i][0] <= 0.5:
+    if n.startswith("MALIGNANT") and result_predict[i][0] <= 0.5:
         correct += 1
     if n.startswith("BENIGN") and result_predict[i][0] > 0.5:
         correct += 1

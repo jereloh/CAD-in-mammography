@@ -17,7 +17,7 @@ import os
 # Model directory
 saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555089736_Masked_EPOCH100'
 # prediction directory
-predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
+predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3_Testing')
 # Classifier
 feature_extractor_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/2"
 IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))

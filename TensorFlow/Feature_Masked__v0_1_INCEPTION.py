@@ -86,9 +86,7 @@ steps_per_epoch = image_data.samples//image_data.batch_size
 batch_stats = CollectBatchStats()
 
 model.fit((item for item in image_data), epochs=100, 
-                    steps_per_epoch=steps_per_epoch,
-                    callbacks = [batch_stats])
-                    #,workers=4,use_multiprocessing=True)
+                    steps_per_epoch=steps_per_epoch)
                     
 print("--- %s seconds ---" % (time.time() - start_time))
 
