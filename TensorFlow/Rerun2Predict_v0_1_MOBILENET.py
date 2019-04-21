@@ -21,6 +21,17 @@ predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
 # Classifier
 feature_extractor_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/2"
 IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
+
+# SET UP model that has frozen layer again!
+# Create the module:
+def feature_extractor(x):
+  feature_extractor_module = hub.Module(feature_extractor_url)
+  return feature_extractor_module(x)
+# Wrap module in Keras layer
+features_extractor_layer = layers.Lambda(feature_extractor, input_shape=IMAGE_SIZE+[3])
+# Freeze the variables in the feature extractor layer, so that the training only modifies the new classifier layer.
+features_extractor_layer.trainable = False
+
 # Generate Data from directory
 image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
 # Load image from directory, shuffle=false to disable indexing, to allow ease of listing later
