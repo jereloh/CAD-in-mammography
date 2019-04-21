@@ -85,7 +85,7 @@ steps_per_epoch = image_data.samples//image_data.batch_size
 
 batch_stats = CollectBatchStats()
 
-model.fit((item for item in image_data), epochs=100, 
+model.fit((item for item in image_data), epochs=50, 
                     steps_per_epoch=steps_per_epoch)
                     
 print("--- %s seconds ---" % (time.time() - start_time))
