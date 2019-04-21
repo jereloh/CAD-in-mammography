@@ -7,11 +7,16 @@ from tensorflow.keras import layers
 import numpy as np
 import os
 
+# model directory
+saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_inception_v3\\1555720707_Masked_EPOCH100_2'
+# predict images directory
+predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
+
 # Generate Data from directory
 image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
 
 # [Classifier]
-feature_extractor_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/2"
+feature_extractor_url = "https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1"
 
 def feature_extractor(x):
   feature_extractor_module = hub.Module(feature_extractor_url)
@@ -20,7 +25,6 @@ def feature_extractor(x):
 IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
 
 # [RESTORE model]
-saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555397193_Masked_EPOCH200'
 new_model = tf.contrib.saved_model.load_keras_model(saved_model_path)
 #new_model.summary()
 
@@ -38,22 +42,18 @@ init = tf.global_variables_initializer()
 sess.run(init)
 
 #  PREDICTIONS
-# Check Prediction # modify this! Suffle false to not reorder in index
-# prediction directory
-predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3_Testing')
-#no. of files
+# Check Prediction Suffle false to not reorder in index
 image_dataPredict_numfile = image_generator.flow_from_directory(str(predict_data_root),shuffle=False, target_size=IMAGE_SIZE)
 
 nb_samples = len(image_dataPredict_numfile.filenames)
 
-image_dataPredict = image_generator.flow_from_directory(str(predict_data_root),shuffle=False, target_size=IMAGE_SIZE,batch_size = nb_samples) # change batch size check why?
+image_dataPredict = image_generator.flow_from_directory(str(predict_data_root),shuffle=False, target_size=IMAGE_SIZE ,batch_size = nb_samples) # change batch size check why?
 for image_batch,label_batch in image_dataPredict:
   print("Image batch shape: ", image_batch.shape)
   print("Labe batch shape: ", label_batch.shape)
   break
 
 #FInd filenames
-#print (image_data.filenames)
 
 result_batch = new_model.predict_generator(image_dataPredict, steps = nb_samples)
 
@@ -80,7 +80,7 @@ with open(os.path.join(predict_data_root,'Prediction.csv'), mode='w') as predict
   prediction_file.write(str(acc/nb_samples))
   prediction_acc= str(acc/nb_samples * 100)
   print (prediction_acc)
-
+'''
 plt.figure(figsize=(10,9))
 
 for n in range(nb_samples):
@@ -93,5 +93,4 @@ for n in range(nb_samples):
 _ = plt.suptitle("Model predictions: "+prediction_acc)
 
 plt.show()
-
-#consider plotting 30 and looking at the plot referencing to the file name?
+'''

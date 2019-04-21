@@ -1,3 +1,11 @@
+'''
+downsample_v0_1.py
+[Goal]
+1. recieve args from cli
+2. Process folder and downsample images
+3. Toss out downsampled images into new folder within
+'''
+
 from PIL import Image
 import os, argparse, glob
 import time  

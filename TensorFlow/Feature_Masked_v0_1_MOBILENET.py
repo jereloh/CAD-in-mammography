@@ -1,18 +1,26 @@
 '''
 Reference = https://www.tensorflow.org/tutorials/images/hub_with_keras
+[Goal]
+1. Load Data set
+2. Load network
+3. Prepare data set for network
+4. Fit data set into network
+5. Plot progress and show time taken
+6. Save network
 '''
-#from tensorflow.python.client import device_lib
-#print(device_lib.list_local_devices())
-#quit()
-
 import matplotlib.pylab as plt
 import tensorflow as tf
 import tensorflow_hub as hub
 from tensorflow.keras import layers
 import numpy as np  
 
+# Start time to test how long it runs
+import time
+start_time = time.time()
+
 # [DATA INPUT] Where You put your Data
 data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
+export_path = (r"F:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224")
 
 # Generate Data from directory
 image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
@@ -21,14 +29,12 @@ image_data = image_generator.flow_from_directory(str(data_root))
 # Network Vector selected:
 feature_extractor_url = "https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1"
 
-
 # Create the module, and check the expected image size:
 def feature_extractor(x):
   feature_extractor_module = hub.Module(feature_extractor_url)
   return feature_extractor_module(x)
 
 IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
-
 
 # "AUTO DOWNSAMPLING" Ensure the data generator is generating images of the expected size 
 image_data = image_generator.flow_from_directory(str(data_root), target_size=IMAGE_SIZE)
@@ -59,11 +65,6 @@ sess.run(init)
 
 from tensorflow.python.client import device_lib
 
-# Test single bach
-#result = model.predict(image_batch)
-#print (result.shape)
-#quit()
-
 # [Train model]
 model.compile(
   optimizer=tf.train.AdamOptimizer(), 
@@ -76,7 +77,6 @@ class CollectBatchStats(tf.keras.callbacks.Callback):
     def __init__(self):
         self.batch_losses = []
         self.batch_acc = []
-
     def on_batch_end(self, batch, logs=None):
         self.batch_losses.append(logs['loss'])
         self.batch_acc.append(logs['acc'])
@@ -85,9 +85,12 @@ steps_per_epoch = image_data.samples//image_data.batch_size
 
 batch_stats = CollectBatchStats()
 
-model.fit((item for item in image_data), epochs=200, 
+model.fit((item for item in image_data), epochs=100, 
                     steps_per_epoch=steps_per_epoch,
                     callbacks = [batch_stats])
+                    #,workers=4,use_multiprocessing=True)
+                    
+print("--- %s seconds ---" % (time.time() - start_time))
 
 # Plt progress
 plt.figure()
@@ -95,13 +98,15 @@ plt.ylabel("Loss")
 plt.xlabel("Training Steps")
 plt.ylim([0,2])
 plt.plot(batch_stats.batch_losses)
+plt.savefig('Feature_Masked_mobilenet_v2_1.png')
 
 plt.figure()
 plt.ylabel("Accuracy")
 plt.xlabel("Training Steps")
 plt.ylim([0,1])
 plt.plot(batch_stats.batch_acc)
+plt.savefig('Feature_Masked_mobilenet_v2_2.png')
 
-plt.show()
-export_path = tf.contrib.saved_model.save_keras_model(model, r"F:\\CBIS_DDSM_PNG\\Feature_Keras_inception_v3")
+#plt.show()
+export_path = tf.contrib.saved_model.save_keras_model(model, export_path)
 print(export_path)

@@ -1,7 +1,6 @@
 '''
-06_Final adapted
+mask_v0_3.py
 [Goal]
-Learn how to:
 1. Create a function from 05_Save_AOI
 2. Automate generation of images without tags into another folder
 3. Tweak tresh parameters
