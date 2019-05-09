@@ -1,3 +1,7 @@
 Images/
 weka-3-9-3/
 MatLab-Scripts/cbis_ddsm_alexnet.mat
+MatLab-Scripts/cbis_ddsm_alexnet100.mat
+MatLab-Scripts/cbis_ddsm_alexnet150.mat
+MatLab-Scripts/cbis_ddsm_alexnet50.mat
+MatLab-Scripts/cbis_ddsm_alexnet501.mat

@@ -1,5 +1,12 @@
-#https://www.tensorflow.org/tutorials/keras/save_and_restore_models 
-
+'''
+Rerun2Predict_v0_1.py
+[Goal]
+1. Re-compile model
+2. Load in test data set
+3. Calculate loss and accuracy with evaluate
+4. Calculate accuracy with predict
+https://www.tensorflow.org/tutorials/keras/save_and_restore_models 
+'''
 import matplotlib.pylab as plt
 import tensorflow as tf
 import tensorflow_hub as hub

@@ -1,6 +1,6 @@
-load cbis_ddsm_alexnet
+load cbis_ddsm_alexnet150
 % Guide: https://www.mathworks.com/help/deeplearning/ref/alexnet.html#bvn44n6
-datasetPath = fullfile('F:\CBIS_DDSM_PNG\MASKED\Calc_Mask_v0_3_alexnet');
+datasetPath = fullfile('F:\CBIS_DDSM_PNG\MASKED\Calc_Mask_v0_3_alexnet_Testing');
 %datasetPath = fullfile('/Users/xfler/Documents/GitHub/Year4_FYP/Images/CBIS_DDSM_PNG/Calcification-Training/AlexNet_RGB/');
 imds = imageDatastore(datasetPath,'IncludeSubfolders',true,'LabelSource','foldernames');
 [imdsTrain,imdsValidation] = splitEachLabel(imds,0.7,'randomized');
@@ -8,7 +8,7 @@ imds = imageDatastore(datasetPath,'IncludeSubfolders',true,'LabelSource','folder
 % Show Image
 numTrainImages = numel(imdsTrain.Labels);
 idx = randperm(numTrainImages,16);
-figure
+%figure
 for i = 1:16
     subplot(4,4,i)
     I = readimage(imdsTrain,idx(i));
@@ -20,11 +20,11 @@ labelCount = countEachLabel(imds);
 
 % Select Pretrained network for transfer learning
 % Others: https://www.mathworks.com/help/deeplearning/ug/pretrained-convolutional-neural-networks.html
-net = cbis_ddsm_alexnet;
+net = cbis_ddsm_alexnet150;
 
 [YPred,scores] = classify(net,imdsValidation);
 idx = randperm(numel(imdsValidation.Files));
-figure
+%figure
 for i = 1:25 
     subplot(5,5,i)
     I = readimage(imdsValidation,idx(i));
@@ -33,8 +33,6 @@ for i = 1:25
     title(string(label));
 end
 
-
-T = table(imdsValidation.files,YPred);
-
 YValidation = imdsValidation.Labels;
 accuracy = mean(YPred == YValidation);
+disp(accuracy)

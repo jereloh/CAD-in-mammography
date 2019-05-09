@@ -14,15 +14,18 @@ from tensorflow.keras import layers
 import numpy as np
 import os
 
+# Start time to test how long it runs
+import time
+
 # Model directory
-saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555089736_Masked_EPOCH100'
+saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_inception\\01-48AM-07-May-2019\\1557164907'
 # prediction directory
-predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3_Testing')
+predict_data_root = r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3_Testing'
 # Classifier
-feature_extractor_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/2"
+feature_extractor_url = "https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1"
 IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
 
-# SET UP model that has frozen layer again!
+# SET UP model that has frozen layer again! 
 # Create the module:
 def feature_extractor(x):
   feature_extractor_module = hub.Module(feature_extractor_url)
@@ -53,7 +56,7 @@ sess = K.get_session()
 init = tf.global_variables_initializer()
 sess.run(init)
 
-#Find filenames
+# Find filenames
 result_batch = restore_model.predict_generator(image_Predict, steps = nb_samples)
 label_names = sorted(image_Predict.class_indices.items(), key=lambda pair:pair[1])
 label_names = np.array([key.title() for key, value in label_names])
@@ -63,7 +66,9 @@ labels_batch = label_names[np.argmax(result_batch, axis=-1)]
 label_filenames = np.array(image_Predict.filenames)
 acc = 0
 prediction_acc = ""
-with open(os.path.join(predict_data_root,'Prediction.csv'), mode='w') as prediction_file:
+# Create Folder with time stamp of completion
+st = time.strftime('%H-%M%p-%d-%b-%Y')
+with open(os.path.join(saved_model_path,'Prediction'+st+'.csv'), mode='w') as prediction_file:
 
   for n in range(nb_samples):
     label_folder, label_filename = label_filenames[n].split("\\")

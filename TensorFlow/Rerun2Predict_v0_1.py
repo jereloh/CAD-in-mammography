@@ -6,6 +6,7 @@ Rerun2Predict_v0_1.py
 3. Calculate Accuracy
 https://www.tensorflow.org/tutorials/keras/save_and_restore_models 
 '''
+#https://www.tensorflow.org/tutorials/keras/save_and_restore_models 
 import matplotlib.pylab as plt
 import tensorflow as tf
 import tensorflow_hub as hub
@@ -13,10 +14,13 @@ from tensorflow.keras import layers
 import numpy as np
 import os
 
+# Start time to test how long it runs
+import time
+
 # Model directory
-saved_model_path = r'F:\\CBIS_DDSM_PNG\\Feature_Keras_mobilenet_v2_100_224\\1555089736_Masked_EPOCH100'
+saved_model_path = r''
 # prediction directory
-predict_data_root = (r'F:\\CBIS_DDSM_PNG\\MASKED\\Calc_Mask_v0_3')
+predict_data_root = r''
 # Classifier
 feature_extractor_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/2"
 IMAGE_SIZE = hub.get_expected_image_size(hub.Module(feature_extractor_url))
@@ -52,7 +56,7 @@ sess = K.get_session()
 init = tf.global_variables_initializer()
 sess.run(init)
 
-#Find filenames
+# Find filenames
 result_batch = restore_model.predict_generator(image_Predict, steps = nb_samples)
 label_names = sorted(image_Predict.class_indices.items(), key=lambda pair:pair[1])
 label_names = np.array([key.title() for key, value in label_names])
@@ -62,7 +66,9 @@ labels_batch = label_names[np.argmax(result_batch, axis=-1)]
 label_filenames = np.array(image_Predict.filenames)
 acc = 0
 prediction_acc = ""
-with open(os.path.join(predict_data_root,'Prediction.csv'), mode='w') as prediction_file:
+# Create Folder with time stamp of completion
+st = time.strftime('%H-%M%p-%d-%b-%Y')
+with open(os.path.join(saved_model_path,'Prediction'+st+'.csv'), mode='w') as prediction_file:
 
   for n in range(nb_samples):
     label_folder, label_filename = label_filenames[n].split("\\")
@@ -73,8 +79,6 @@ with open(os.path.join(predict_data_root,'Prediction.csv'), mode='w') as predict
   prediction_file.write(str(acc/nb_samples))
   prediction_acc= str(acc/nb_samples * 100)
   print (prediction_acc)
-  
-# PLOT for verification if necessary below
 '''
 # find label batches
 for image_batch,label_batch in image_Predict:

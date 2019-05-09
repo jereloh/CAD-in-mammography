@@ -12,7 +12,8 @@ import matplotlib.pylab as plt
 import tensorflow as tf
 import tensorflow_hub as hub
 from tensorflow.keras import layers
-import numpy as np  
+import numpy as np
+import os  
 
 # Start time to test how long it runs
 import time
@@ -27,7 +28,7 @@ image_generator = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1/255)
 image_data = image_generator.flow_from_directory(str(data_root))
 
 # Network Vector selected:
-feature_extractor_url = "https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1"
+feature_extractor_url = "https://tfhub.dev/google/imagenet/mobilenet_v2_100_224/feature_vector/2"
 
 # Create the module, and check the expected image size:
 def feature_extractor(x):
@@ -81,16 +82,28 @@ class CollectBatchStats(tf.keras.callbacks.Callback):
         self.batch_losses.append(logs['loss'])
         self.batch_acc.append(logs['acc'])
 
+# Training Parameters
 steps_per_epoch = image_data.samples//image_data.batch_size
-
 batch_stats = CollectBatchStats()
+epochSelected = 1
 
-model.fit((item for item in image_data), epochs=100, 
+model.fit((item for item in image_data), epochs=epochSelected, 
                     steps_per_epoch=steps_per_epoch,
                     callbacks = [batch_stats])
                     #,workers=4,use_multiprocessing=True)
                     
-print("--- %s seconds ---" % (time.time() - start_time))
+timetaken = ("--- %s seconds ---" % (time.time() - start_time))
+print(timetaken)
+
+# Create Folder with time stamp of completion
+st = time.strftime('%H-%M%p-%d-%b-%Y')
+folderOut = os.path.join(export_path,st)
+os.makedirs(folderOut)
+
+# Store training details
+file = open(os.path.join(folderOut,"info.txt"), "w") 
+file.write("time taken:"+timetaken +"\n"+"feature_extractor_url:"+feature_extractor_url+"\n"+"Epoch:"+str(epochSelected)+"\n"+"data_root"+data_root) 
+file.close() 
 
 # Plt progress
 plt.figure()
@@ -98,15 +111,15 @@ plt.ylabel("Loss")
 plt.xlabel("Training Steps")
 plt.ylim([0,2])
 plt.plot(batch_stats.batch_losses)
-plt.savefig('Feature_Masked_mobilenet_v2_1.png')
+plt.savefig(os.path.join(folderOut,'lossVStraining.png'))
 
 plt.figure()
 plt.ylabel("Accuracy")
 plt.xlabel("Training Steps")
 plt.ylim([0,1])
 plt.plot(batch_stats.batch_acc)
-plt.savefig('Feature_Masked_mobilenet_v2_2.png')
+plt.savefig(os.path.join(folderOut,'accVStraining.png'))
 
 #plt.show()
-export_path = tf.contrib.saved_model.save_keras_model(model, export_path)
+export_path = tf.contrib.saved_model.save_keras_model(model, folderOut)
 print(export_path)
