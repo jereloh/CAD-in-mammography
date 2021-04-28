@@ -15,14 +15,17 @@ Sources of Mammographic images:
 
 
 Framework of the Project scope:
+
 ![Framework of the Project scope:](https://github.com/xjer/CAD-in-mammography/blob/master/Framework%20of%20project%20scope.png)
 
 
 Flow diagram and its components:
+
 ![Flow diagram and its components:](https://github.com/xjer/CAD-in-mammography/blob/master/Flow%20diagram%20and%20its%20components.png)
 
 
 Final results:
+
 ![Final results:](https://github.com/xjer/CAD-in-mammography/blob/master/Final%20results.png)
 
 
