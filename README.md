@@ -14,23 +14,26 @@ Sources of Mammographic images:
 * Lee, R., Gimenez, F., Hoogi, A., Miyake, K., Gorovoy, M. and Rubin, D. (2017). A curated mammography data set for use in computer-aided detection and diagnosis research. Scientific Data, 4, p.170177.
 
 
-Framework of the Project scope:
+###Framework of the Project scope:
 
 ![Framework of the Project scope:](https://github.com/xjer/CAD-in-mammography/blob/master/Framework%20of%20project%20scope.png)
 
 
-Flow diagram and its components:
+###Flow diagram and its components:
 
 ![Flow diagram and its components:](https://github.com/xjer/CAD-in-mammography/blob/master/Flow%20diagram%20and%20its%20components.png)
 
 
-Final results:
+###Final results:
 
 ![Final results:](https://github.com/xjer/CAD-in-mammography/blob/master/Final%20results.png)
 
 
 **Do drop me a mail for the full thesis related to this git repository if anyone is interested!**
 
+
+
+##GNU General Public License, version 2 (GPL-2.0)
 Computer Aided Detection in Mammography, Predictive classification for Breast Cancer
 Copyright (C) 2021 jeremyl
 
